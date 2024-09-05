@@ -27,8 +27,8 @@ jobs:
       #   run: pip install itertools
       - name: Install requests
         run: pip install requests
-      - name: Install threading
-        run: pip install threading    
+      # - name: Install threading
+      #   run: pip install threading    
       
       - name: Run py
         run: python ${{ github.workspace }}/换ip.py
