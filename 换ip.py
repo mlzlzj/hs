@@ -44,7 +44,6 @@ def write_results(result_set, port, template_file_name):
     with open(template_file_name, "r", encoding="utf-8") as template_file:
         template_content = template_file.read()
 
-    # 提取地区名称，去掉路径
     area_name = template_file_name.split('/')[-1].split('.')[0]
 
     output_file_name = f"{area_name}_iptv.txt"
@@ -72,13 +71,11 @@ def merge_and_delete_files(result_sets, ports, area_names):
 def main():
     print("~~~~开始启动扫描程序~~~~")
 
-    # 默认扫描的模板链接
     scan_link1 = "http://{ip}:{port}/hls/1/index.m3u8"
     ip1 = "113.64.147.1"
     port1 = "8811"
     scan_type1 = '1'
 
-    # 新增扫描的模板链接
     scan_link2 = "http://{ip}:{port}/hls/1/index.m3u8"
     ip2 = "42.48.17.204"
     port2 = "808"
@@ -94,7 +91,6 @@ def main():
     port4 = "8888"
     scan_type4 = '1'
 
-    # 生成IP组合并检查链接
     all_ips1 = generate_ip_combinations(ip1, scan_type1)
     links1 = [scan_link1.replace("{ip}", ip).replace("{port}", port1) for ip in all_ips1]
 
@@ -146,25 +142,21 @@ def main():
     for link in result_set1:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port1}")
-    # print(f"所有的频道列表文件保存为：揭阳_iptv.txt。")
 
     print(f"\n找到湖南的有效链接ip: {len(result_set2)} 个")
     for link in result_set2:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port2}")
-    # print(f"所有的频道列表文件保存为：长沙_iptv.txt")
 
     print(f"\n找到梅州的有效链接ip: {len(result_set3)} 个")
     for link in result_set3:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port3}")
-    # print(f"所有的频道列表文件保存为：梅州_iptv.txt")
 
     print(f"\n找到张家界的有效链接ip: {len(result_set4)} 个")
     for link in result_set4:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port4}")
-    # print(f"所有的频道列表文件保存为：张家界_iptv.txt")
 
     print(f"\n所有的频道列表文件已合并为：jd.txt")
 
