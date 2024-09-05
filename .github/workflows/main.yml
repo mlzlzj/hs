@@ -23,8 +23,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-      - name: Install itertools
-        run: pip install itertools
+      # - name: Install itertools
+      #   run: pip install itertools
       - name: Install requests
         run: pip install requests
       - name: Install threading
