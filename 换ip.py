@@ -1,6 +1,7 @@
 import itertools
 import requests
 import threading
+import os
 
 
 def generate_ip_combinations(base_ip, scan_type='1'):
@@ -43,14 +44,29 @@ def write_results(result_set, port, template_file_name):
     with open(template_file_name, "r", encoding="utf-8") as template_file:
         template_content = template_file.read()
 
-    output_file_name = f"{template_file_name.split('.')[0]}_iptv.txt"
+    # 提取地区名称，去掉路径
+    area_name = template_file_name.split('/')[-1].split('.')[0]
+
+    output_file_name = f"{area_name}_iptv.txt"
 
     with open(output_file_name, "w", encoding="utf-8") as output_file:
-        output_file.write(f"频道列表,#genre#\n")
+        output_file.write(f"{area_name}频道,#genre#\n")
         for valid_link in result_set:
             ip = valid_link.split('/')[2].split(':')[0]
             result_content = template_content.replace("ip", f"{ip}:{port}")
             output_file.write(f"{result_content}\n")
+
+
+def merge_and_delete_files(result_sets, ports, area_names):
+    with open("jd.txt", "w", encoding="utf-8") as jd_file:
+        for result_set, port, area_name in zip(result_sets, ports, area_names):
+            output_file_name = f"{area_name}_iptv.txt"
+            if os.path.exists(output_file_name):
+                with open(output_file_name, "r", encoding="utf-8") as output_file:
+                    jd_file.write(output_file.read())
+                os.remove(output_file_name)  # 删除原始文件
+            else:
+                print(f"文件 {output_file_name} 不存在，跳过合并。")
 
 
 def main():
@@ -123,29 +139,34 @@ def main():
     write_results(result_set3, port3, "地区/梅州.txt")
     write_results(result_set4, port4, "地区/张家界.txt")
 
+    # 合并文件并删除原始文件
+    merge_and_delete_files([result_set1, result_set2, result_set3, result_set4], [port1, port2, port3, port4], ["揭阳", "长沙", "梅州", "张家界"])
+
     print(f"\n找到揭阳的有效链接ip: {len(result_set1)} 个")
     for link in result_set1:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port1}")
-    print(f"所有的频道列表文件保存为：揭阳酒店_iptv.txt。")
+    # print(f"所有的频道列表文件保存为：揭阳_iptv.txt。")
 
     print(f"\n找到湖南的有效链接ip: {len(result_set2)} 个")
     for link in result_set2:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port2}")
-    print(f"所有的频道列表文件保存为：长沙联通_iptv.txt")
+    # print(f"所有的频道列表文件保存为：长沙_iptv.txt")
 
     print(f"\n找到梅州的有效链接ip: {len(result_set3)} 个")
     for link in result_set3:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port3}")
+    # print(f"所有的频道列表文件保存为：梅州_iptv.txt")
 
     print(f"\n找到张家界的有效链接ip: {len(result_set4)} 个")
     for link in result_set4:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port4}")
+    # print(f"所有的频道列表文件保存为：张家界_iptv.txt")
 
-    print(f"所有的频道列表文件保存为：张家界联通_iptv.txt")
+    print(f"\n所有的频道列表文件已合并为：jd.txt")
 
 
 if __name__ == "__main__":
