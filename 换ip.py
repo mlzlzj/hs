@@ -118,10 +118,10 @@ def main():
     for thread in threads:
         thread.join()
 
-    write_results(result_set1, port1, "揭阳.txt")
-    write_results(result_set2, port2, "长沙.txt")
-    write_results(result_set3, port3, "梅州.txt")
-    write_results(result_set4, port4, "张家界.txt")
+    write_results(result_set1, port1, "地区/揭阳.txt")
+    write_results(result_set2, port2, "地区/长沙.txt")
+    write_results(result_set3, port3, "地区/梅州.txt")
+    write_results(result_set4, port4, "地区/张家界.txt")
 
     print(f"\n找到揭阳的有效链接ip: {len(result_set1)} 个")
     for link in result_set1:
