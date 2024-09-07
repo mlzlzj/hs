@@ -106,6 +106,11 @@ def main():
     port4 = "8888"
     scan_type4 = '1'
 
+    scan_link5 = "http://{ip}:{port}/hls/29/index.m3u8"
+    ip5 = "120.84.121.248"
+    port5 = "808"
+    scan_type5 = '1'
+
     # 生成IP组合并检查链接
     all_ips1 = generate_ip_combinations(ip1, scan_type1)
     links1 = [scan_link1.replace("{ip}", ip).replace("{port}", port1) for ip in all_ips1]
@@ -119,25 +124,31 @@ def main():
     all_ips4 = generate_ip_combinations(ip4, scan_type4)
     links4 = [scan_link4.replace("{ip}", ip).replace("{port}", port4) for ip in all_ips4]
 
+    all_ips5 = generate_ip_combinations(ip5, scan_type5)
+    links5 = [scan_link5.replace("{ip}", ip).replace("{port}", port5) for ip in all_ips5]
+
     result_set1 = set()
     result_set2 = set()
     result_set3 = set()
     result_set4 = set()
+    result_set5 = set()
     progress_counter = [0]
     progress_lock = threading.Lock()
-    total_count = len(links1) + len(links2) + len(links3) + len(links4)
+    total_count = len(links1) + len(links2) + len(links3) + len(links4) + len(links5)
 
     # 多线程检查链接
     threads = []
-    for link in links1 + links2 + links3 + links4:
+    for link in links1 + links2 + links3 + links4 + links5:
         if link in links1:
             result_set = result_set1
         elif link in links2:
             result_set = result_set2
         elif link in links3:
             result_set = result_set3
-        else:
+        elif link in links4:
             result_set = result_set4
+        else:
+            result_set = result_set5
         thread = threading.Thread(target=check_link,
                                   args=(link, result_set, progress_lock, progress_counter, total_count))
         threads.append(thread)
@@ -150,11 +161,11 @@ def main():
     write_results(result_set2, port2, "地区/长沙.txt")
     write_results(result_set3, port3, "地区/梅州.txt")
     write_results(result_set4, port4, "地区/张家界.txt")
-
+    write_results(result_set5, port5, "地区/广东.txt")
     # 电影.txt文件的路径
     movie_file_path = "地区/电影.txt"
     # 合并文件并删除除了电影.txt之外的其他.txt文件
-    merge_files_and_delete(["揭阳", "长沙", "梅州", "张家界"], movie_file_path)
+    merge_files_and_delete(["揭阳", "长沙", "梅州", "张家界", "广东"], movie_file_path)
 
     print(f"\n找到揭阳的有效链接ip: {len(result_set1)} 个")
     for link in result_set1:
@@ -175,6 +186,11 @@ def main():
     for link in result_set4:
         ip = link.split('/')[2].split(':')[0]
         print(f"{ip}:{port4}")
+
+    print(f"\n找到广东联通的有效链接ip: {len(result_set5)} 个")
+    for link in result_set5:
+        ip = link.split('/')[2].split(':')[0]
+        print(f"{ip}:{port5}")
 
     print(f"\n所有的频道列表文件已合并为：jd.txt")
 
