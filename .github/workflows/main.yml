@@ -2,7 +2,7 @@ name: ip
 
 on:
   schedule:
-    - cron: '0 06,10,14,18,22,02 * * *'
+    - cron: '0 */1 * * *'
   push:
     branches:
       - main
