@@ -4,14 +4,15 @@ import threading
 import os
 
 
+# 根据给定的IP地址，端口和扫描类型生成所有可能的IP地址
 def generate_ip_combinations(base_ip, scan_type='1'):
     parts = base_ip.split('.')
     A, B, C, D = parts[0], parts[1], parts[2], parts[3]
 
-    if scan_type == '1':  # 扫D段
+    if scan_type == '1':  # 扫描D段
         C_range = [C]
         D_range = range(0, 256)
-    elif scan_type == '2':  # C段D段都扫
+    elif scan_type == '2':  # 扫描C段和D段
         C_range = range(0, 256)
         D_range = range(0, 256)
 
@@ -22,6 +23,7 @@ def generate_ip_combinations(base_ip, scan_type='1'):
     return all_ips
 
 
+# 检查链接是否有效（HTTP状态码200），并将结果写入集合。
 def check_link(link, result_set, progress_lock, progress_counter, total_count):
     try:
         response = requests.get(link, timeout=5)
@@ -40,177 +42,136 @@ def check_link(link, result_set, progress_lock, progress_counter, total_count):
             print(f"[{progress_counter[0]}/{total_count} - {progress:.2f}%] 失败: {link}")
 
 
-def write_results(result_set, port, template_file_name):
-    with open(template_file_name, "r", encoding="utf-8") as template_file:
-        template_content = template_file.read()
+# 将结果写入以地区名称_iptv.txt为文件名的文件中
+def write_results(result_set, port, muban, region, output_folder):
+    file_path = os.path.join(output_folder, f"{region}_iptv.txt")
 
-    # 提取地区名称，去掉路径
-    area_name = template_file_name.split('/')[-1].split('.')[0]
-
-    output_file_name = f"{area_name}_iptv.txt"
-
-    with open(output_file_name, "w", encoding="utf-8") as output_file:
-        output_file.write(f"{area_name}频道,#genre#\n")
+    with open(file_path, "w", encoding="utf-8") as file:
+        # 写入标题
+        file.write(f"{region}频道,#genre#\n")
+        # 写入所有的频道列表
         for valid_link in result_set:
             ip = valid_link.split('/')[2].split(':')[0]
-            result_content = template_content.replace("ip", f"{ip}:{port}")
-            output_file.write(f"{result_content}\n")
+            result_content = muban.replace("ip", f"{ip}:{port}")
+            file.write(f"{result_content}\n")
 
 
-def merge_files_and_delete(area_names, movie_file_path):
-    # 首先读取电影.txt文件的内容
-    movie_content = ""
-    if os.path.exists(movie_file_path):
-        with open(movie_file_path, "r", encoding="utf-8") as movie_file:
-            movie_content = movie_file.read()
+def read_config(config_path):
+    with open(config_path, 'r', encoding='utf-8') as f:
+        configs = [line.strip().split(',') for line in f]
+    return configs
+
+
+def merge_files(output_folder, zdy_file_path):
+    # 获取所有_iptv.txt文件的路径
+    iptv_files = [f for f in os.listdir(output_folder) if f.endswith('_iptv.txt')]
+
+    # 合并所有_iptv.txt文件的内容
+    merged_content = ""
+    for iptv_file in iptv_files:
+        file_path = os.path.join(output_folder, iptv_file)
+        with open(file_path, "r", encoding="utf-8") as file:
+            merged_content += file.read() + "\n"
+
+    # 检查zdy.txt文件是否存在
+    if os.path.exists(zdy_file_path):
+        # 读取zdy.txt文件的内容
+        with open(zdy_file_path, "r", encoding="utf-8") as zdy_file:
+            zdy_content = zdy_file.read()
+        # 合并zdy.txt和_iptv.txt文件的内容
+        final_content = merged_content + "\n" + zdy_content
     else:
-        print(f"文件 {movie_file_path} 不存在，跳过合并。")
+        final_content = merged_content
 
-    # 开始写入jd.txt文件，首先写入电影.txt的内容
-    with open("jd.txt", "w", encoding="utf-8") as jd_file:
-        jd_file.write(movie_content)
+    # 将合并后的内容写入iptv_list.txt文件
+    iptv_list_file_path = "iptv_list.txt"
+    with open(iptv_list_file_path, "w", encoding="utf-8") as iptv_list_file:
+        iptv_list_file.write(final_content)
 
-        # 然后合并其他.txt文件的内容
-        for area_name in area_names:
-            output_file_name = f"{area_name}_iptv.txt"
-            if os.path.exists(output_file_name):
-                with open(output_file_name, "r", encoding="utf-8") as output_file:
-                    jd_file.write(output_file.read())
-                os.remove(output_file_name)  # 删除原始文件
-            else:
-                print(f"文件 {output_file_name} 不存在，跳过合并。")
+    print(f"\n所有地区频道列表文件合并完成，文件保存为：{iptv_list_file_path}")
 
 
 def main():
-    print("~~~~开始启动扫描程序~~~~")
+    # 打印标题信息
+    print("~~~~~~~~开始启动扫描程序~~~~~~~~")
 
-    # 默认扫描的模板链接
-    scan_link1 = "http://{ip}:{port}/hls/1/index.m3u8"
-    ip1 = "113.64.147.57"
-    port1 = "8811"
-    scan_type1 = '1'
+    # 从config.txt读取配置信息
+    config_path = 'config.txt'
+    try:
+        configs = read_config(config_path)
+    except ValueError:
+        print(f"配置文件 {config_path} 格式错误。")
+        return
 
-    # 新增扫描的模板链接
-    scan_link2 = "http://{ip}:{port}/hls/1/index.m3u8"
-    ip2 = "42.48.17.204"
-    port2 = "808"
-    scan_type2 = '1'
+    # 检查并创建“地区频道”文件夹
+    output_folder = "地区频道"
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
-    scan_link3 = "http://{ip}:{port}/tsfile/live/1015_1.m3u8"
-    ip3 = "119.125.104.139"
-    port3 = "9901"
-    scan_type3 = '1'
+    all_valid_ips = {}  # 用于存储所有地区的有效IP地址
 
-    scan_link4 = "http://{ip}:{port}/newlive/live/hls/2/live.m3u8"
-    ip4 = "110.53.52.63"
-    port4 = "8888"
-    scan_type4 = '1'
+    for config in configs:
+        try:
+            region, scan_link, ip, port, scan_type = config
+        except ValueError:
+            print(f"配置文件 {config_path} 中格式错误。")
+            continue
 
-    scan_link5 = "http://{ip}:{port}/hls/81/index.m3u8"
-    ip5 = "120.84.121.248"
-    port5 = "808"
-    scan_type5 = '1'
+        # 读取对应地区.txt文件内容
+        try:
+            with open(f"地区模板/{region}.txt", "r", encoding="utf-8") as file:
+                muban = file.read()
+        except FileNotFoundError:
+            print(f"文件 地区模板/{region}.txt 未找到。")
+            continue
 
-    # scan_link6 = "http://{ip}:{port}/tsfile/live/1000_1.m3u8?key=txiptv&playlive=1&authid=0"  #  湖南邵阳
-    # ip6 = "110.52.99.109"
-    # port6 = "9901"
-    # scan_type6 = '1'
+        # 生成所选范围的IP组合
+        all_ips = generate_ip_combinations(ip, scan_type)
 
-    # 生成IP组合并检查链接
-    all_ips1 = generate_ip_combinations(ip1, scan_type1)
-    links1 = [scan_link1.replace("{ip}", ip).replace("{port}", port1) for ip in all_ips1]
+        # 检查链接的完整URL
+        links = [scan_link.replace("{ip}", ip).replace("{port}", port) for ip in all_ips]
 
-    all_ips2 = generate_ip_combinations(ip2, scan_type2)
-    links2 = [scan_link2.replace("{ip}", ip).replace("{port}", port2) for ip in all_ips2]
+        result_set = set()  # 使用集合存储有效链接
+        progress_counter = [0]  # 共享的进度计数器
+        progress_lock = threading.Lock()  # 锁用于同步访问计数器
+        total_count = len(links)  # 总链接数
 
-    all_ips3 = generate_ip_combinations(ip3, scan_type3)
-    links3 = [scan_link3.replace("{ip}", ip).replace("{port}", port3) for ip in all_ips3]
+        # 多线程检查链接
+        threads = []
+        for link in links:
+            thread = threading.Thread(target=check_link,
+                                      args=(link, result_set, progress_lock, progress_counter, total_count))
+            threads.append(thread)
+            thread.start()
 
-    all_ips4 = generate_ip_combinations(ip4, scan_type4)
-    links4 = [scan_link4.replace("{ip}", ip).replace("{port}", port4) for ip in all_ips4]
+        for thread in threads:
+            thread.join()
 
-    all_ips5 = generate_ip_combinations(ip5, scan_type5)
-    links5 = [scan_link5.replace("{ip}", ip).replace("{port}", port5) for ip in all_ips5]
+        # 确保所有线程完成后最终写入结果
+        write_results(result_set, port, muban, region, output_folder)
 
-    # all_ips6 = generate_ip_combinations(ip6, scan_type6)
-    # links6 = [scan_link6.replace("{ip}", ip).replace("{port}", port6) for ip in all_ips6]
+        # 提示扫描结束
+        print(f"{region}找到的有效链接总数: {len(result_set)}")
+        print(f"{region}扫描完成,文件保存为：{region}_iptv.txt\n")
 
-    result_set1 = set()
-    result_set2 = set()
-    result_set3 = set()
-    result_set4 = set()
-    result_set5 = set()
-    # result_set6 = set()
-    progress_counter = [0]
-    progress_lock = threading.Lock()
-    total_count = len(links1) + len(links2) + len(links3) + len(links4) + len(links5)
+        # 收集每个地区的所有有效IP地址
+        for valid_link in result_set:
+            ip_with_port = valid_link.split('/')[2].split(':')[0] + ":" + port
+            if region not in all_valid_ips:
+                all_valid_ips[region] = []
+            all_valid_ips[region].append(ip_with_port)
 
-    # 多线程检查链接
-    threads = []
-    for link in links1 + links2 + links3 + links4 + links5:
-        if link in links1:
-            result_set = result_set1
-        elif link in links2:
-            result_set = result_set2
-        elif link in links3:
-            result_set = result_set3
-        elif link in links4:
-            result_set = result_set4
-        # elif link in links5:
-        #     result_set = result_set5
-        else:
-            result_set = result_set5
+    # 集中打印出所有地区的所有有效IP地址
+    for region, ips in all_valid_ips.items():
+        print(f"\n本次扫描找到{region}有效ip：")
+        for ip in ips:
+            print(ip)
+        # print()  # 打印空行作为分隔
 
-        thread = threading.Thread(target=check_link,
-                                  args=(link, result_set, progress_lock, progress_counter, total_count))
-        threads.append(thread)
-        thread.start()
-
-    for thread in threads:
-        thread.join()
-
-    write_results(result_set1, port1, "地区/揭阳.txt")
-    write_results(result_set2, port2, "地区/长沙.txt")
-    write_results(result_set3, port3, "地区/梅州.txt")
-    write_results(result_set4, port4, "地区/张家界.txt")
-    write_results(result_set5, port5, "地区/广东.txt")
-    # write_results(result_set6, port6, "地区/邵阳.txt")
-    # 电影.txt文件的路径
-    movie_file_path = "地区/电影.txt"
-    # 合并文件并删除除了电影.txt之外的其他.txt文件
-    merge_files_and_delete(["揭阳", "长沙", "梅州", "张家界", "广东"], movie_file_path)
-
-    print(f"\n找到揭阳的有效链接ip: {len(result_set1)} 个")
-    for link in result_set1:
-        ip = link.split('/')[2].split(':')[0]
-        print(f"{ip}:{port1}")
-
-    print(f"\n找到湖南的有效链接ip: {len(result_set2)} 个")
-    for link in result_set2:
-        ip = link.split('/')[2].split(':')[0]
-        print(f"{ip}:{port2}")
-
-    print(f"\n找到梅州的有效链接ip: {len(result_set3)} 个")
-    for link in result_set3:
-        ip = link.split('/')[2].split(':')[0]
-        print(f"{ip}:{port3}")
-
-    print(f"\n找到张家界的有效链接ip: {len(result_set4)} 个")
-    for link in result_set4:
-        ip = link.split('/')[2].split(':')[0]
-        print(f"{ip}:{port4}")
-
-    print(f"\n找到广东联通的有效链接ip: {len(result_set5)} 个")
-    for link in result_set5:
-        ip = link.split('/')[2].split(':')[0]
-        print(f"{ip}:{port5}")
-
-    # print(f"\n找到湖南邵阳的有效链接ip: {len(result_set6)} 个")
-    # for link in result_set6:
-    #     ip = link.split('/')[2].split(':')[0]
-    #     print(f"{ip}:{port6}")
-
-    print(f"\n所有的频道列表文件已合并为：jd.txt")
+    # 合并文件
+    output_folder = "地区频道"
+    zdy_file_path = "zdy.txt"
+    merge_files(output_folder, zdy_file_path)
 
 
 if __name__ == "__main__":
