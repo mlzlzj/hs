@@ -51,7 +51,7 @@
 频道 74, http://60.165.206.213:8888/newlive/live/hls/74/live.m3u8
 频道 75, http://60.165.206.213:8888/newlive/live/hls/75/live.m3u8
 
-海南频道，#genre#
+海南频道,#genre#
 频道 1, http://124.225.176.106:8888/newlive/live/hls/1/live.m3u8
 频道 3, http://124.225.176.106:8888/newlive/live/hls/3/live.m3u8
 频道 4, http://124.225.176.106:8888/newlive/live/hls/4/live.m3u8
