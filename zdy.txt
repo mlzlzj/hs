@@ -271,6 +271,15 @@ CCTV17,http://tvbox6.icu/tv/migu.php?id=cctv17
 咪咕体育27,http://39.135.137.203/000000001000/3000000010000000097/index.m3u8
 咪咕体育28,http://39.135.137.203/000000001000/3000000010000005180/index.m3u8
 
+CIBN影院,#genre#
+情感影院,http://zby.xjqxz.top/zh09/live.m3u8
+动作影院,http://zby.xjqxz.top/zh04/live.m3u8
+古装剧场,http://zby.xjqxz.top/gzwxj/live.m3u8
+经典剧场,http://zby.xjqxz.top/gzdsj2/live.m3u8
+精品影院,http://zby.xjqxz.top/zh13/live.m3u8
+流金岁月,http://zby.xjqxz.top/hkdy1/live.m3u8
+院线大片,http://zby.xjqxz.top/zh06/live.m3u8
+
 经典电影,#genre#
 001锂X（英语）,https://vip.lz-cdn3.com/20220918/13743_ca63ece3/index.m3u8
 19十九（日语）,https://vip.lzcdn2.com/20220601/8082_a5d5c545/index.m3u8
