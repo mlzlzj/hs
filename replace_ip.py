@@ -92,8 +92,14 @@ def merge_files(output_folder, zdy_file_path):
 
 
 def main():
-    # 打印标题信息
-    print("~~~~~~~~开始启动扫描程序~~~~~~~~")
+    # 获取地区模板文件夹下的所有模板文件
+    template_directory = "地区模板"
+    template_files = [f for f in os.listdir(template_directory) if f.endswith('.txt')]
+    # 提取模板名称
+    template_names = [os.path.splitext(file)[0] for file in template_files]
+
+    # 打印显示所有地区模板文件夹下的所有模板名称
+    print(f"......开始扫描 {' '.join(template_names)} 地区的频道列表......")
 
     # 从config.txt读取配置信息
     config_path = 'config.txt'
@@ -166,7 +172,6 @@ def main():
         print(f"\n本次扫描找到{region}有效ip：")
         for ip in ips:
             print(ip)
-        # print()  # 打印空行作为分隔
 
     # 合并文件
     output_folder = "地区频道"
