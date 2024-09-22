@@ -78,4 +78,3 @@ CGTN纪录,http://ip/hls/19/index.m3u8
 西藏卫视,http://ip/hls/103/index.m3u8
 新疆卫视,http://ip/hls/104/index.m3u8
 兵团卫视,http://ip/hls/106/index.m3u8
-
