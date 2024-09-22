@@ -8,3 +8,4 @@
 贵港,http://{ip}:{port}/tsfile/live/1027_1.m3u8,171.108.239.112,8181,1
 五华,http://{ip}:{port}/tsfile/live/1015_1.m3u8,113.64.94.250,9901,1
 武汉,http://{ip}:{port}/tsfile/live/1000_1.m3u8,113.57.109.48,1111,1
+梅州2,http://{ip}:{port}/tsfile/live/1106_1.m3u8,59.32.97.154,9901,1
