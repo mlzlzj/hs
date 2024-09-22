@@ -2,7 +2,7 @@ import itertools
 import requests
 import threading
 import os
-
+import time
 
 # 根据给定的IP地址，端口和扫描类型生成所有可能的IP地址
 def generate_ip_combinations(base_ip, scan_type='1'):
@@ -24,22 +24,29 @@ def generate_ip_combinations(base_ip, scan_type='1'):
 
 
 # 检查链接是否有效（HTTP状态码200），并将结果写入集合。
-def check_link(link, result_set, progress_lock, progress_counter, total_count):
+def check_link(link, result_set, response_times, progress_lock, progress_counter, total_count):
     try:
+        start_time = time.time()  # 记录请求发送前的当前时间
         response = requests.get(link, timeout=5)
+        end_time = time.time()  # 记录请求完成后的当前时间
+
+        response_time_ms = (end_time - start_time) * 1000  # 计算响应时间，单位为毫秒
+
         with progress_lock:
             progress_counter[0] += 1
             progress = (progress_counter[0] / total_count) * 100
-            if response.status_code == 200:
+            if "EXTM3U" in response.text:
                 result_set.add(link)
-                print(f"[{progress_counter[0]}/{total_count} - {progress:.2f}%] 成功: {link}")
+                ip_with_port = link.split('/')[2].split(':')[0] + ":" + link.split('/')[2].split(':')[1]
+                response_times[ip_with_port] = response_time_ms  # 存储响应时间
+                print(f"[{progress_counter[0]}/{total_count} - {progress:.2f}%] 成功: {link} [响应时间: {response_time_ms:.2f} ms]")
             else:
-                print(f"[{progress_counter[0]}/{total_count} - {progress:.2f}%] 失败: {link}")
-    except Exception:
+                print(f"[{progress_counter[0]}/{total_count} - {progress:.2f}%] 失败: {link} [响应时间: {response_time_ms:.2f} ms]")
+    except Exception as e:
         with progress_lock:
             progress_counter[0] += 1
             progress = (progress_counter[0] / total_count) * 100
-            print(f"[{progress_counter[0]}/{total_count} - {progress:.2f}%] 失败: {link}")
+            print(f"[{progress_counter[0]}/{total_count} - {progress:.2f}%] 失败: {link} [错误: {str(e)}]")
 
 
 # 将结果写入以地区名称_iptv.txt为文件名的文件中
@@ -114,7 +121,9 @@ def main():
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
+    # 在主函数中添加存储响应时间的字典
     all_valid_ips = {}  # 用于存储所有地区的有效IP地址
+    all_response_times = {}  # 用于存储所有地区的有效IP的响应时间
 
     for config in configs:
         try:
@@ -138,6 +147,7 @@ def main():
         links = [scan_link.replace("{ip}", ip).replace("{port}", port) for ip in all_ips]
 
         result_set = set()  # 使用集合存储有效链接
+        response_times = {}  # 用于存储每个有效IP的响应时间
         progress_counter = [0]  # 共享的进度计数器
         progress_lock = threading.Lock()  # 锁用于同步访问计数器
         total_count = len(links)  # 总链接数
@@ -146,7 +156,8 @@ def main():
         threads = []
         for link in links:
             thread = threading.Thread(target=check_link,
-                                      args=(link, result_set, progress_lock, progress_counter, total_count))
+                                      args=(
+                                      link, result_set, response_times, progress_lock, progress_counter, total_count))
             threads.append(thread)
             thread.start()
 
@@ -160,18 +171,19 @@ def main():
         print(f"{region}找到的有效链接总数: {len(result_set)}")
         print(f"{region}扫描完成,文件保存为：{region}_iptv.txt\n")
 
-        # 收集每个地区的所有有效IP地址
+        # 收集每个地区的所有有效IP地址及其响应时间
         for valid_link in result_set:
             ip_with_port = valid_link.split('/')[2].split(':')[0] + ":" + port
-            if region not in all_valid_ips:
-                all_valid_ips[region] = []
-            all_valid_ips[region].append(ip_with_port)
+            all_valid_ips.setdefault(region, []).append(ip_with_port)
+            # 将响应时间也添加到对应地区的列表中
+            if ip_with_port in response_times:
+                all_response_times.setdefault(region, []).append(response_times[ip_with_port])
 
-    # 集中打印出所有地区的所有有效IP地址
+        # 集中打印出所有地区的所有有效IP地址及其响应时间
     for region, ips in all_valid_ips.items():
         print(f"\n本次扫描找到{region}有效ip：")
-        for ip in ips:
-            print(ip)
+        for ip, response_time in zip(ips, all_response_times.get(region, [])):
+            print(f"{ip}   响应时间: {response_time:.2f} ms")
 
     # 合并文件
     output_folder = "地区频道"
