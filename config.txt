@@ -11,4 +11,4 @@
 北京,http://{ip}:{port}/tsfile/live/0016_1.m3u8,123.118.50.74,3990,1
 梅州2,http://{ip}:{port}/tsfile/live/1106_1.m3u8,59.32.97.154,9901,1
 广西2,http://{ip}:{port}/tsfile/live/1214_1.m3u8,116.11.140.229,18181,1
-怀化,http://{ip}:{port}/tsfile/live/1063_1.m3u8,111.8.242.107,9902,1
+
