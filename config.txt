@@ -13,5 +13,6 @@
 武汉,http://{ip}:{port}/tsfile/live/1000_1.m3u8,113.57.109.48,1111,1
 北京,http://{ip}:{port}/tsfile/live/0016_1.m3u8,123.118.50.74,3990,1
 福建,http://{ip}:{port}/tsfile/live/23279_1.m3u8,117.27.190.42,9998,1
-怀化,http://{ip}:{port}/tsfile/live/1009_1.m3u8,111.8.242.107,9902,1
+怀化1,http://{ip}:{port}/tsfile/live/1009_1.m3u8,111.8.242.107,9902,1
+怀化2,http://{ip}:{port}/tsfile/live/1063_1.m3u8,111.8.224.6,9902,1
 昆明,http://ip}:{port}/tsfile/live/0001_1.m3u8,14.204.109.208,9901,1
