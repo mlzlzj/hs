@@ -253,8 +253,7 @@ CETV早期教育,http://l8221706.xiahouyuhan.icu/cqyx.php?id=zqjy#http://op.sev7
 云南卫视,http://39.134.240.3/PLTV/2/224/3221225986/index.m3u8
 重庆卫视,http://39.134.240.3/PLTV/2/224/3221225966/index.m3u8
 大湾区卫视,http://183.215.116.132:6610/000000001000/2000000003000000045/index.m3u8?livemode=1&stbId=10&channel-id=hnbblive&Contentid=2000000003000000045
-凤凰中文,https://tv.sd.cn/sichuan?id=239.93.0.162:2192
-凤凰资讯,https://tv.sd.cn/sichuan?id=239.93.0.118:2191
+
 
 
 电视指南,http://183.215.116.132:6610/180000001001/00000001000000000091000000244797/main.m3u8?IASHttpSessionId=OTT
@@ -491,6 +490,20 @@ TV5,http://ma.510217.xyz:29801/stream/channelid/565096557?profile=pass
 魅力足球,http://ma.510217.xyz:29801/stream/channelid/1297803062?profile=pass
 黑龙江卫视,http://ma.510217.xyz:29801/stream/channelid/1068589119?profile=pass
 黑龙江卫视,http://ma.510217.xyz:29801/stream/channelid/897091241?profile=pass
+
+港台频道,#genre#
+凤凰中文,https://tv.sd.cn/sichuan?id=239.93.0.162:2192
+凤凰资讯,https://tv.sd.cn/sichuan?id=239.93.0.118:2191
+TVBS新闻,http://61.221.215.25:8800/hls/9/index.m3u8
+八大戏剧,http://61.221.215.25:8800/hls/39/index.m3u8
+八大综合,http://61.221.215.25:8800/hls/56/index.m3u8
+八大第一,http://61.221.215.25:8800/hls/55/index.m3u8
+三立戏剧,http://61.221.215.25:8800/hls/41/index.m3u8
+八大第一,http://61.221.215.25:8800/hls/55/index.m3u8
+AMC 电影,http://61.221.215.25:8800/hls/43/index.m3u8
+纬来精彩,http://61.221.215.25:8800/hls/48/index.m3u8
+探索亚洲,http://61.221.215.25:8800/hls/50/index.m3u8
+动物星球,http://61.221.215.25:8800/hls/57/index.m3u8
 
 
 咪咕频道,#genre#
