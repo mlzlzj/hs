@@ -15,4 +15,5 @@
 福建,http://{ip}:{port}/tsfile/live/23279_1.m3u8,117.27.190.42,9998,1
 怀化1,http://{ip}:{port}/tsfile/live/1009_1.m3u8,111.8.242.151,9902,1
 怀化2,http://{ip}:{port}/tsfile/live/1011_1.m3u8,111.8.224.6,9902,1
+怀化3,http://{ip}:{port}/tsfile/live/1111_1.m3u8,124.231.212.66,9999,2
 昆明,http://ip}:{port}/tsfile/live/0001_1.m3u8,14.204.109.208,9901,1
