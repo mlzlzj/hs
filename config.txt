@@ -1,4 +1,4 @@
-.揭阳,http://{ip}:{port}/hls/33/index.m3u8,113.64.147.1,8811,1
+揭阳,http://{ip}:{port}/hls/33/index.m3u8,113.64.147.1,8811,1
 五华,http://{ip}:{port}/tsfile/live/1015_1.m3u8,113.64.94.250,9901,1
 五华2,http://{ip}:{port}/tsfile/live/1019_1.m3u8,163.177.122.35,9901,1
 梅州1,http://{ip}:{port}/tsfile/live/1015_1.m3u8,119.125.104.31,9901,1
@@ -18,3 +18,4 @@
 怀化2,http://{ip}:{port}/tsfile/live/1063_1.m3u8,111.8.224.6,9902,1
 怀化3,http://{ip}:{port}/tsfile/live/1111_1.m3u8,124.231.212.61,9999,1
 昆明,http://ip}:{port}/tsfile/live/0001_1.m3u8,14.204.109.208,9901,1
+港台,http://ip}:{port}/livehttpplay?channel_id=20002,108.181.20.243,27347,2
