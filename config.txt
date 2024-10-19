@@ -18,4 +18,4 @@
 怀化2,http://{ip}:{port}/tsfile/live/1063_1.m3u8,111.8.224.6,9902,1
 怀化3,http://{ip}:{port}/tsfile/live/1111_1.m3u8,124.231.212.61,9999,1
 昆明,http://ip}:{port}/tsfile/live/0001_1.m3u8,14.204.109.208,9901,1
-港台,http://ip}:{port}/livehttpplay?channel_id=20002,108.181.20.243,27347,2
+港台,http://ip}:{port}/livehttpplay?channel_id=20002,108.181.20.243,27347,1
